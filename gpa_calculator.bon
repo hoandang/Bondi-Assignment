@@ -1,0 +1,95 @@
+(* GP datatype *)
+(*datatype GP = GP of Int;;*)
+(*let hd = GP 5;;*)
+(*let d =  GP 4;;*)
+(*let c =  GP 3;;*)
+(*let p =  GP 2;;*)
+(*let f =  GP 1;;*)
+(*let (get_point: GP -> Int) =*)
+(*| GP p -> p;;*)
+
+class GP {
+gp: Int;
+set_gp = { fun g -> this.gp = g }
+get_gp = { | () -> !this.gp }
+
+static make = { fun x ->
+    let res = new GP in
+    res.set_gp x;
+    res
+}
+}
+
+(* Subject *)
+class Subject {
+code: Int;
+name: String;
+credit_point: Int;
+
+set_code = { fun i -> this.code = i }
+get_code = { | () -> !this.code }
+set_name = { fun n -> this.name = n }
+get_name = { | () -> !this.name }
+set_cp   = { fun cp -> this.credit_point = cp }
+get_cp   = { | () -> !this.credit_point }
+
+static make = { fun n p x ->
+   let res = new Subject in
+   res.set_code n;
+   res.set_name p;
+   res.set_cp   x;
+   res
+}
+
+with
+toString += 
+| (s:Subject) -> "Code: " ^ (toString (s.get_code())) ^ ", Subject name: " ^ s.get_name() ^ ", CP: " ^ (toString (s.get_cp()))
+}
+
+(* Students *)
+class Student {
+student_id: Int;
+name: String;
+complete_subjects: List (Subject * GP);
+gpa: Float;
+
+get_student_id = { | () -> !this.student_id }
+set_student_id = { fun i -> this.student_id = i }
+get_name = { | () -> !this.name }
+set_name = { fun n -> this.name = n }
+get_complete_subjects = { | () -> !this.complete_subjects }
+set_complete_subjects = { fun cs -> this.complete_subjects = cs }
+set_gpa = { fun g -> this.gpa = g }
+get_gpa = { | () -> !this.gpa }
+
+static make = { fun n p x ->
+    let res = new Student in
+    res.set_student_id n;
+    res.set_name p;
+    res.set_complete_subjects x;
+    res
+}
+
+gpa = { |() ->
+    foldleft (fun p -> | (x,n) -> p + ((int2float (x.get_cp()))) * (int2float (n.get_gp()))) 0.0 (this.get_gpa())
+}
+
+with
+toString += | (s:Student) -> s.get_name()
+}
+
+let hd = GP.make 5;;
+let d = GP.make 4;;
+let c = GP.make 3;;
+let p = GP.make 2;;
+let f = GP.make 1;;
+
+let subject1 = Subject.make 1 "Programming with Patterns" 6;;
+let subject2 = Subject.make 1 "Database Programming" 6;;
+let subject3 = Subject.make 1 "Project Management Professional" 6;;
+let subject4 = Subject.make 1 "Interface Design" 6;;
+
+let student1 = Student.make  1 "Hoan" [(subject1, c), (subject2, c), (subject3, p), (subject4, d)];;
+let student2 = Student.make  2 "Foo" [(subject1, d), (subject2, f), (subject3, p), (subject4, hd)];;
+
+student1.gpa();; 
